@@ -1,10 +1,15 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, RefreshCw } from 'lucide-react';
+import { Search, RefreshCw, Calendar as CalendarIcon } from 'lucide-react';
 import { formatCurrency, formatPercentage, formatCryptoAmount, getPercentageColor } from '../../utils/formatters';
 import { usePortfolio } from '../../contexts/PortfolioContext';
 import { Cryptocurrency } from '../../types';
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface PortfolioTableProps {
   assets: Cryptocurrency[];
@@ -12,17 +17,13 @@ interface PortfolioTableProps {
 
 const PortfolioTable: React.FC<PortfolioTableProps> = ({ assets }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const navigate = useNavigate();
 
   const filteredAssets = assets.filter(asset => 
     asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     asset.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleSelectDate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
-  };
 
   const handleRowClick = (assetId: string) => {
     navigate(`/crypto/${assetId}`);
@@ -32,30 +33,44 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({ assets }) => {
     <div className="bg-crypto-darkBg border border-crypto-darkBorder rounded-lg overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-b border-crypto-darkBorder">
         <div className="flex items-center gap-3">
-          <div className="relative max-w-xs">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <input 
-                type="date" 
-                className="opacity-0 absolute inset-0 cursor-pointer"
-                onChange={handleSelectDate}
-                value={selectedDate}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[200px] justify-start text-left font-normal bg-crypto-darkCard border-crypto-darkBorder hover:bg-crypto-darkCard/70",
+                  !date && "text-crypto-mutedText"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "dd/MM/yyyy") : <span>Selecionar data</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-crypto-darkCard border-crypto-darkBorder" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+                className="bg-crypto-darkCard text-crypto-lightText pointer-events-auto"
+                classNames={{
+                  day_selected: "bg-crypto-orange text-white hover:bg-crypto-orange hover:text-white",
+                  day_today: "bg-crypto-darkBg text-crypto-lightText",
+                  day: "text-crypto-lightText hover:bg-crypto-darkBg",
+                  head_cell: "text-crypto-mutedText",
+                }}
               />
-              <span className="text-crypto-mutedText text-sm">Selecionar data</span>
-            </div>
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-crypto-mutedText">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="6" width="18" height="15" rx="2" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M4 11H20" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M9 16H15" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M8 3L8 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M16 3L16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </span>
-            </div>
-            <div className="bg-crypto-darkCard h-10 pl-3 pr-10 py-2 border border-crypto-darkBorder rounded-lg cursor-pointer"></div>
-          </div>
-          <div className="h-10 px-3 flex items-center justify-center">→</div>
+            </PopoverContent>
+          </Popover>
+          {date && (
+            <Button 
+              variant="ghost" 
+              className="h-9 px-2 text-crypto-mutedText hover:text-crypto-lightText"
+              onClick={() => setDate(undefined)}
+            >
+              Limpar
+            </Button>
+          )}
         </div>
         
         <div className="flex items-center gap-4">

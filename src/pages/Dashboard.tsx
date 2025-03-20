@@ -28,10 +28,9 @@ const Dashboard: React.FC = () => {
     setTransactionModalMode('edit');
   };
 
-  const handleDeleteTransaction = () => {
-    if (selectedTransaction) {
-      setShowDeleteModal(true);
-    }
+  const handleDeleteClick = () => {
+    setShowTransactionModal(false);
+    setShowDeleteModal(true);
   };
 
   return (
@@ -127,6 +126,7 @@ const Dashboard: React.FC = () => {
           onClose={() => setShowTransactionModal(false)}
           transaction={selectedTransaction}
           mode={transactionModalMode}
+          onDeleteClick={handleDeleteClick}
         />
       ) : (
         <TransactionModal

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X, Calendar, Trash2 } from 'lucide-react';
 import { Transaction, TransactionType } from '../../types';
 import { usePortfolio } from '../../contexts/PortfolioContext';
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ interface TransactionModalProps {
   transaction?: Transaction;
   cryptoId?: string;
   mode: 'add' | 'edit';
+  onDeleteClick?: () => void;
 }
 
 const TransactionModal: React.FC<TransactionModalProps> = ({
@@ -19,6 +20,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
   transaction,
   cryptoId,
   mode,
+  onDeleteClick,
 }) => {
   const { addTransaction, updateTransaction } = usePortfolio();
   
@@ -233,12 +235,24 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
               </div>
             </div>
             
-            <button
-              className="w-full py-3 rounded-lg btn-primary font-medium text-white"
-              onClick={handleSubmit}
-            >
-              {mode === 'add' ? 'Adicionar Transação' : 'Salvar alterações'}
-            </button>
+            <div className="flex gap-4">
+              {mode === 'edit' && onDeleteClick && (
+                <button
+                  className="py-3 px-4 rounded-lg bg-crypto-red hover:bg-crypto-red/90 text-white transition-colors font-medium flex items-center justify-center gap-2"
+                  onClick={onDeleteClick}
+                >
+                  <Trash2 size={16} />
+                  Remover Transação
+                </button>
+              )}
+              
+              <button
+                className={`py-3 rounded-lg btn-primary font-medium text-white ${mode === 'edit' && onDeleteClick ? 'flex-1' : 'w-full'}`}
+                onClick={handleSubmit}
+              >
+                {mode === 'add' ? 'Adicionar Transação' : 'Salvar alterações'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

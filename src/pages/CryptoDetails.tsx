@@ -52,6 +52,11 @@ const CryptoDetails: React.FC = () => {
     setTransactionModalMode('edit');
   };
 
+  const handleDeleteClick = () => {
+    setShowTransactionModal(false);
+    setShowDeleteModal(true);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-crypto-darkBg text-crypto-lightText">
       <Header />
@@ -146,6 +151,7 @@ const CryptoDetails: React.FC = () => {
           onClose={() => setShowTransactionModal(false)}
           transaction={selectedTransaction}
           mode={transactionModalMode}
+          onDeleteClick={handleDeleteClick}
         />
       ) : (
         <TransactionModal

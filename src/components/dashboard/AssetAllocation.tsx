@@ -33,10 +33,10 @@ const AssetAllocation: React.FC = () => {
 
       <div className="h-[220px] relative">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+          <PieChart margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
             <Pie
               data={currentPortfolio.allocationData}
-              cx="50%"
+              cx="40%"
               cy="50%"
               innerRadius={60}
               outerRadius={80}
@@ -56,7 +56,7 @@ const AssetAllocation: React.FC = () => {
               layout="vertical" 
               verticalAlign="middle" 
               align="right"
-              wrapperStyle={{ right: 0 }}
+              wrapperStyle={{ right: 10 }}
             />
           </PieChart>
         </ResponsiveContainer>
